@@ -46,8 +46,8 @@ task extractDependencies(dependsOn: ':starter:jar') << {
 
 task buildStandaloneWar(dependsOn: extractDependencies) << {
   if(project.hasProperty('inWar') && !project.hasProperty('outWar')) {
-    def warName = inWar[0..(inWar.indexOf('.war')-1)]
-    outWar = "build/$warName-standalone.war"
+    def warName = (inWar=~/.+[\/\\](.+\.war)/)[0][1]
+    project.ext.set('outWar',"build/$warName-standalone.war")
   }
 
   ant.unzip(src: inWar, dest: warDir)
@@ -62,7 +62,7 @@ task buildStandaloneWar(dependsOn: extractDependencies) << {
     attribute(name: 'Main-Class', value: 'com.xlson.standalonewar.Starter')
   }
 
-  ant.zip(destfile: "$outWar") {
+  ant.zip(destfile: project.ext.outWar) {
     fileset(dir: warDir)
   }
 }
